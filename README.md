@@ -4,153 +4,93 @@ A collection of reusable, AI-powered skills for OpenCode agents that automate co
 
 ## Overview
 
-This repository contains self-contained skill modules that extend OpenCode agent capabilities. Each skill provides a focused set of behaviors for common development tasks, from quality assurance to intent-driven code generation.
+Self-contained skill modules that extend OpenCode agent capabilities. Each skill provides focused behaviors for common development tasks—quality assurance, code analysis, security, compliance, and more. Skills adapt to your project's conventions and stack.
 
-Skills in this repository have been designed with production-grade standards, following security best practices, comprehensive error handling, and clean code principles. They adapt to your project's conventions and stack, providing consistent, maintainable results.
+## Skills by Category
 
-## Available Skills
+### Code Quality & Analysis
+| Skill | Description |
+|-------|-------------|
+| [Codebase Cartographer](/codebase-cartographer/README.md) | Visualize architectural boundaries and dependency relationships |
+| [Style Mimic](/style-mimic/README.md) | Learn coding patterns and match established conventions |
+| [Anti-Pattern Archaeologist](/anti-pattern-archaeologist/README.md) | Detect legacy code smells, anti-patterns, and technical debt |
+| [Semantic Impact Analysis](/semantic-impact-analysis/README.md) | Understand ripple effects of code changes before making them |
 
-### Intent-to-Code Pipeline
+### Architecture & Standards
+| Skill | Description |
+|-------|-------------|
+| [Architecture Gatekeeper](/architecture-gatekeeper/README.md) | Prevent commits violating architecture patterns or circular dependencies |
+| [Code Policy Enforcer](/code-policy-enforcer/README.md) | Enforce team coding standards and forbidden patterns |
+| [Code Review Automation](/code-review-automation/README.md) | Automate code review workflows and PR analysis |
 
-Transforms vague feature requests into production-ready code through a structured five-phase pipeline: intent analysis, architecture design, implementation planning, code generation, and verification.
+### Testing & CI/CD
+| Skill | Description |
+|-------|-------------|
+| [Test Generator](/test-generator/README.md) | Generate comprehensive test suites from source code |
+| [QA Analyzer](/qa-skill/README.md) | Comprehensive QA checks for releases and deployments |
+| [CI/CD Healer](/ci-cd-healer/README.md) | Diagnose and fix flaky tests, optimize pipeline caching |
 
-**Use when:** Requirements are unclear, features are complex, or you need structured guidance from concept to deployment.
+### Performance & Maintenance
+| Skill | Description |
+|-------|-------------|
+| [Performance Optimizer](/performance-optimizer/README.md) | Identify bottlenecks and apply code optimizations |
+| [Dependency Upgrader](/dependency-upgrader/README.md) | Safely upgrade dependencies and manage breaking changes |
 
-```bash
-skill intent-to-code
-```
+### Documentation
+| Skill | Description |
+|-------|-------------|
+| [Documentation Generator](/documentation-generator/README.md) | Generate API docs, comments, and technical documentation |
 
-[Learn more →](/intent-to-code/README.md)
+### Security & Compliance
+| Skill | Description |
+|-------|-------------|
+| [Compliance & Security Assistant](/compliance-security-assistant/README.md) | Scan for GDPR, HIPAA, SOC2 violations and PII handling |
+| [Secrets Detection Hook](/secrets-detection-hook/README.md) | Prevent hardcoded secrets and PII from being committed |
+| [Audit Trail Logger](/audit-trail-logger/README.md) | Capture comprehensive logs for compliance and security |
 
-### QA Analyzer
+### Safety & Operations
+| Skill | Description |
+|-------|-------------|
+| [Environment Guard](/environment-guard/README.md) | Block dangerous operations in production |
+| [Cost Monitor Hook](/cost-monitor-hook/README.md) | Track and alert on expensive cloud operations |
+| [Legacy Modernization Navigator](/legacy-modernization-navigator/README.md) | Analyze legacy stacks and create incremental migration plans |
 
-Performs comprehensive quality assurance checks including code quality assessment, testing coverage verification, security review, performance analysis, and documentation validation.
-
-**Use before:** Releases, deployments, or when ensuring code meets project standards.
-
-```bash
-@qa-analyzer Analyze product readiness for this feature
-```
-
-[Learn more →](/qa-skill/README.md)
-
-### Style Mimic
-
-Analyzes existing codebases to identify and replicate coding conventions, naming patterns, formatting rules, and architectural approaches when generating new code.
-
-**Use when:** Writing new code in an unfamiliar codebase or maintaining style consistency across contributions.
-
-```bash
-skill:style-mimic Create a new utility function following existing patterns
-```
-
-[Learn more →](/style-mimic/README.md)
+### Development Workflow
+| Skill | Description |
+|-------|-------------|
+| [Intent-to-Code Pipeline](/intent-to-code/README.md) | Multi-step feature generation from concept to code |
 
 ## Quick Start
 
-### Browse Available Skills
-
-Skills are organized in the repository root as self-contained directories. Each skill includes:
-
-- `SKILL.md` - Skill definition with YAML frontmatter and behavioral documentation
-- `README.md` - Human-readable documentation with usage examples
-
-### Install a Skill
-
-**Global Installation**
+**Install a skill globally:**
 ```bash
 mkdir -p ~/.config/opencode/skills/
 cp -r <skill-name>/ ~/.config/opencode/skills/
 ```
 
-**Project Installation**
+**Install in project:**
 ```bash
 mkdir -p .opencode/skills/
 cp <skill-name>/SKILL.md .opencode/skills/
 ```
 
-### Using Skills
-
-Once installed, skills are automatically discovered by OpenCode agents. Reference them using the skill tool:
-
+**Use a skill:**
 ```bash
 skill <skill-name>
+# or
+@skill-name Your request here
 ```
 
-Or invoke through conversation by mentioning the skill name with the `skill:` prefix:
-
-```
-skill:style-mimic Analyze the codebase conventions
-```
-
-## Skill Structure
-
-All skills follow a consistent structure for easy contribution:
+## Structure
 
 ```
 skill-name/
-├── SKILL.md       # Skill definition (required)
-└── README.md      # Documentation (required)
+├── SKILL.md       # Skill definition with YAML frontmatter
+└── README.md      # Human-readable documentation
 ```
 
-### SKILL.md Format
-
-Skills require YAML frontmatter with these fields:
-
-| Field | Required | Description |
-|-------|----------|-------------|
-| `name` | Yes | Skill identifier (kebab-case, 1-64 chars) |
-| `description` | Yes | What the skill does (1-1024 chars) |
-| `license` | No | License identifier (e.g., MIT) |
-| `compatibility` | No | Compatible platforms |
-| `metadata` | No | Additional key-value metadata |
-
-Following the frontmatter, markdown content describes the skill's behavior, use cases, and examples.
-
-### README.md Format
-
-Each skill should include:
-
-- One-line description
-- Overview (2-3 paragraphs)
-- Usage instructions
-- Concrete examples
-- Configuration options
-- Requirements or prerequisites
-
-## Contributing
-
-Contributions are welcome. To add a new skill:
-
-1. Create a new directory with kebab-case naming
-2. Add `SKILL.md` with proper frontmatter
-3. Add `README.md` with comprehensive documentation
-4. Test the skill with OpenCode
-5. Submit a pull request
-
-See [AGENTS.md](/AGENTS.md) for detailed development guidelines.
-
-## Repository Structure
-
-```
-opencode-skills/
-├── AGENTS.md              # Development guidelines and standards
-├── README.md              # This file
-├── intent-to-code/        # Multi-phase feature development skill
-├── qa-skill/              # Quality assurance analysis skill
-└── style-mimic/           # Code pattern matching skill
-```
-
-## Requirements
-
-- OpenCode agent framework
-- Access to a codebase for implementation tasks
-- Compatible with all OpenCode-supported platforms
+See [AGENTS.md](/AGENTS.md) for development guidelines.
 
 ## License
 
-Individual skills carry their own licenses. See each skill's README for details. The repository structure and documentation are available under the MIT License.
-
-## Topics
-
-ai-agents, automation, developer-tools, opencode, skills
+Individual skills carry their own licenses. Repository structure and documentation are MIT licensed.

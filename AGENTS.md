@@ -159,3 +159,203 @@ To test a new skill:
 2. Start OpenCode in the repository
 3. Use the `/init` command to refresh skill discovery
 4. Invoke the skill using the native `skill` tool
+
+---
+
+# OpenCode Plugins
+
+Plugins extend OpenCode with custom code (JavaScript/TypeScript). Unlike skills which provide behavioral instructions, plugins can hook into events, modify execution, and add custom tools.
+
+## Plugin Locations
+
+- **Project-level**: `.opencode/plugins/`
+- **Global**: `~/.config/opencode/plugins/`
+- **NPM packages**: Add to `plugin` array in `opencode.json`
+
+Example `opencode.json`:
+```json
+{
+  "plugin": ["opencode-wakatime", "@my-org/custom-plugin"]
+}
+```
+
+## Plugin Structure
+
+A plugin is a JavaScript/TypeScript module that exports a function returning hooks:
+
+```javascript
+// .opencode/plugins/my-plugin.js
+export const MyPlugin = async ({ project, client, $, directory, worktree }) => {
+  return {
+    "tool.execute.before": async (input, output) => {
+      // Modify tool execution
+    },
+  };
+};
+```
+
+### Context Properties
+
+- `project` - Current project information
+- `client` - OpenCode SDK client for AI interaction
+- `$` - Bun shell API for executing commands
+- `directory` - Current working directory
+- `worktree` - Git worktree path
+
+## TypeScript Support
+
+Import types from `@opencode-ai/plugin`:
+
+```typescript
+import type { Plugin } from "@opencode-ai/plugin";
+
+export const MyPlugin: Plugin = async (ctx) => {
+  return {
+    // Type-safe hook implementations
+  };
+};
+```
+
+## External Dependencies
+
+Add `package.json` to your config directory for npm dependencies:
+
+```json
+// .opencode/package.json
+{
+  "dependencies": {
+    "shescape": "^2.1.0"
+  }
+}
+```
+
+OpenCode runs `bun install` at startup. Import in plugins:
+
+```javascript
+import { escape } from "shescape";
+```
+
+## Available Events
+
+### Command Events
+- `command.executed`
+
+### File Events
+- `file.edited`
+- `file.watcher.updated`
+
+### Tool Events
+- `tool.execute.before`
+- `tool.execute.after`
+
+### Shell Events
+- `shell.env`
+
+### Session Events
+- `session.created`
+- `session.compacted`
+- `session.deleted`
+- `session.idle`
+- `session.status`
+
+### Message Events
+- `message.updated`
+- `message.removed`
+
+### LSP Events
+- `lsp.client.diagnostics`
+- `lsp.updated`
+
+### Permission Events
+- `permission.asked`
+- `permission.replied`
+
+## Custom Tools
+
+Plugins can add custom tools:
+
+```typescript
+import { type Plugin, tool } from "@opencode-ai/plugin";
+
+export const CustomToolsPlugin: Plugin = async (ctx) => {
+  return {
+    tool: {
+      mytool: tool({
+        description: "This is a custom tool",
+        args: {
+          foo: tool.schema.string(),
+        },
+        async execute(args, context) {
+          return `Hello ${args.foo}`;
+        },
+      }),
+    },
+  };
+};
+```
+
+## Examples
+
+### Prevent .env access
+```javascript
+export const EnvProtection = async () => {
+  return {
+    "tool.execute.before": async (input, output) => {
+      if (input.tool === "read" && output.args.filePath.includes(".env")) {
+        throw new Error("Do not read .env files");
+      }
+    },
+  };
+};
+```
+
+### Inject environment variables
+```javascript
+export const InjectEnvPlugin = async () => {
+  return {
+    "shell.env": async (input, output) => {
+      output.env.MY_API_KEY = "secret";
+    },
+  };
+};
+```
+
+### Send notifications
+```javascript
+export const NotificationPlugin = async ({ $ }) => {
+  return {
+    event: async ({ event }) => {
+      if (event.type === "session.idle") {
+        await $`osascript -e 'display notification "Session done!"'`;
+      }
+    },
+  };
+};
+```
+
+## Logging
+
+Use `client.app.log()` for structured logging:
+
+```javascript
+export const MyPlugin = async ({ client }) => {
+  await client.app.log({
+    body: {
+      service: "my-plugin",
+      level: "info",
+      message: "Plugin initialized",
+    },
+  });
+};
+```
+
+Levels: `debug`, `info`, `warn`, `error`.
+
+## Load Order
+
+1. Global config (`~/.config/opencode/opencode.json`)
+2. Project config (`opencode.json`)
+3. Global plugin directory (`~/.config/opencode/plugins/`)
+4. Project plugin directory (`.opencode/plugins/`)
+
+Duplicate npm packages load once. Local and npm plugins with similar names load separately.
